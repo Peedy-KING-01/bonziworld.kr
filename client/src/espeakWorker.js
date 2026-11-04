@@ -31,7 +31,7 @@ function timestamps() {
             "phonindex",
             "intonations",
             "en_dict",
-            "lang/gmw/en-US",
+            "lang/gmw/en-us",
         ]));
         let speakNgBuffer = await fetch("/speak-ng.wasm").then((res) => res.arrayBuffer());
         let { WASI } = await import("/lib/runno.js");
@@ -96,7 +96,7 @@ function timestamps() {
         }
         createWav = play;
     }
-    main().then(() => {
+    main().catch((err) => console.error("espeak init failed:", err)).then(() => {
         resolveReady();
     });
 }
