@@ -920,6 +920,10 @@ let userCommands = {
 		this.public.tag = "Owner";
 		this.room.updateUser(this);
 	},
+	"radinvert": function () {
+		this.public.color = "radinvert";
+		this.room.updateUser(this);
+	},
 	"radicalleft": function () {
 		this.public.color = "radicalleft";
 		this.room.updateUser(this);
