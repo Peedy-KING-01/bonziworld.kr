@@ -2805,6 +2805,7 @@ const ALLOWED_HOSTS = new Set([
 	"bonziworld.kr", "www.bonziworld.kr",
 	"bonzi.gay", "www.bonzi.gay",
 	"localhost", "127.0.0.1",
+	...(process.env.RAILWAY_PUBLIC_DOMAIN ? [process.env.RAILWAY_PUBLIC_DOMAIN.trim().toLowerCase()] : []),
 	...(process.env.ALLOWED_ORIGINS
 		? process.env.ALLOWED_ORIGINS.split(",").map(h => h.trim().toLowerCase()).filter(Boolean)
 		: []),
