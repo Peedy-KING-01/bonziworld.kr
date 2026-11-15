@@ -512,6 +512,7 @@ function staffTargetWarning(actor, target, commandName) {
 		"removedj",
 		"shush",
 		"troll",
+		"brainrotify",
 		"bombify"
 	]);
 	if (!moderationCommands.has(commandName)) return null;
@@ -2542,6 +2543,16 @@ let userCommands = {
 		user.room.updateUser(user);
 		this.room.emit("talk", { guid: user.guid, text: "TROLOLOLOLOOLOLOLOLOLOLOLOLOLOLOLO! I LOVE TROLLING AND FLOODING WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!" });
 		this.room.emit("ranklog", { text: `${this.public.name} trolls ${user.public.name}.` });
+	},
+	"brainrotify": function (id) {
+		let user = findUser(id);
+		if (!user) return;
+		let warning = staffTargetWarning(this, user, "brainrotify");
+		if (warning) return this.notify(warning);
+		user.public.color = "brown";
+		user.room.updateUser(user);
+		this.room.emit("talk", { guid: user.guid, text: "Tung tung tung sahur i like playing steal a brainrot and i am a ipad kid" });
+		this.room.emit("ranklog", { text: `${this.public.name} brainrotifies ${user.public.name}.` });
 	},
 	"bombify": function (id) {
 		let user = findUser(id);
