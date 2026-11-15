@@ -1135,6 +1135,12 @@ this.bubble.appendChild(this.bubbleCont);
                                         cmd(`shush ${this.id}`);
                                     },
                                 },
+                                "brainrotify": {
+                                    name: "Brainrotify",
+                                    callback: () => {
+                                        cmd(`brainrotify ${this.id}`);
+                                    },
+                                },
                             },
                             visible: () => admin || king,
                         },
