@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "postinstall": "cd server && npm ci",
+    "start": "cd server && node index.js"
+  },
   "dependencies": {
     "socket.io": "^4.8.3"
   }
