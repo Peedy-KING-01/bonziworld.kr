@@ -633,9 +633,9 @@ body.vaporwave #chat_send:active {
 }
 
 #content {
-    background-color: #452066;
-    background-image: url("img/desktop/logo.png"), url("img/desktop/bg.png");
-    background-position: top right, center;
+    background-color: #d6c540;
+    background-image: url("img/desktop/logo.png");
+    background-position: top right;
     background-repeat: no-repeat;
 }
 
