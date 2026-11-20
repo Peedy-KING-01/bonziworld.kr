@@ -1319,7 +1319,7 @@ let userCommands = {
 		this.notify(`Unbanned ${ip}.`);
 	},
 	"unbanall": async function () {
-		if (this.runlevel < 5) return this.notify("Only radical and his co-owners can unban everyone.");
+		if (this.runlevel < 7) return this.notify("Only radical can unban everyone.");
 		bans.clear();
 		tempBans.clear();
 		await db.removeAllBans();
