@@ -6,12 +6,8 @@
     let stream = null;
     let active = false;
 
-    const btn = document.createElement("div");
-    btn.id = "btn_voice";
-    btn.className = "tray_btn";
-    btn.textContent = "\u{1F3A4}";
-    btn.title = "Voice chat (click to join/leave)";
-    document.getElementById("chat_tray").appendChild(btn);
+    const btn = document.getElementById("voicechat_button");
+    const desc = btn.querySelector(".start_menu_item_description");
 
     function closePeer(guid) {
         const p = peers.get(guid);
@@ -55,19 +51,24 @@
         }
         active = true;
         btn.classList.add("on");
+        desc.textContent = "Connected. Click to disconnect.";
         socket.emit("vc:join");
     }
 
     function stop() {
         active = false;
         btn.classList.remove("on");
+        desc.textContent = "Talk with your voice in this room.";
         socket.emit("vc:leave");
         for (const guid of [...peers.keys()]) closePeer(guid);
         if (stream) stream.getTracks().forEach((t) => t.stop());
         stream = null;
     }
 
-    btn.onclick = () => (active ? stop() : start());
+    btn.onclick = () => {
+        document.getElementById("start_menu").hidden = true;
+        return active ? stop() : start();
+    };
 
     // Existing voice members; we are the newcomer, so we send the offers.
     socket.on("vc:peers", async (guids) => {
