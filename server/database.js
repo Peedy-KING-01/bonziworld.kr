@@ -325,6 +325,15 @@ export async function removeBan(ip) {
 	});
 }
 
+export async function removeAllBans() {
+	return new Promise((resolve, reject) => {
+		db.run(`DELETE FROM active_bans`, [], (err) => {
+			if (err) return reject(err);
+			resolve();
+		});
+	});
+}
+
 export async function loadActiveBans() {
 	return new Promise((resolve, reject) => {
 		db.run(`DELETE FROM active_bans WHERE expires_at IS NOT NULL AND expires_at <= ?`, [Date.now()], (err) => {

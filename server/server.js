@@ -1318,6 +1318,13 @@ let userCommands = {
 		await db.removeBan(ip);
 		this.notify(`Unbanned ${ip}.`);
 	},
+	"unbanall": async function () {
+		if (this.runlevel < 5) return this.notify("Only radical and his co-owners can unban everyone.");
+		bans.clear();
+		tempBans.clear();
+		await db.removeAllBans();
+		this.notify("Unbanned everyone.");
+	},
 	"asnban": async function (text) {
 		let [target, ...reasonArr] = text.split(" ");
 		if (!target) return this.notify("Please specify a user ID or ASN.");
