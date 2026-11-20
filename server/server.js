@@ -3259,7 +3259,35 @@ class User {
 		});
 
 		socket.on("disconnect", () => {
+			if (user.voice) {
+				user.voice = false;
+				user.room.emit("vc:left", user.guid);
+			}
 			user.disconnect();
+		});
+
+		// Voice chat: WebRTC mesh per room. The server only relays signaling;
+		// audio flows peer to peer.
+		socket.on("vc:join", () => {
+			user.voice = true;
+			let peers = user.room.users
+				.filter(u => u !== user && u.voice)
+				.map(u => u.guid);
+			socket.emit("vc:peers", peers);
+		});
+
+		socket.on("vc:leave", () => {
+			if (!user.voice) return;
+			user.voice = false;
+			user.room.emit("vc:left", user.guid);
+		});
+
+		socket.on("vc:signal", (data) => {
+			if (!user.voice) return;
+			let result = z.object({ to: z.string(), data: z.any() }).safeParse(data);
+			if (!result.success) return;
+			let target = user.room.users.find(u => u.guid === result.data.to && u.voice);
+			if (target) target.socket.emit("vc:signal", { from: user.guid, data: result.data.data });
 		});
 
 		socket.on("vote", (data) => {

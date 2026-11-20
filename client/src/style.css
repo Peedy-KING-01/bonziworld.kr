@@ -2330,3 +2330,16 @@ body.no_bubble_fade .bubble {
 #page_login.login_fadeout {
     opacity: 0;
 }
+
+#btn_voice {
+    cursor: pointer;
+    text-align: center;
+    font-size: 13px;
+    line-height: 16px;
+    opacity: 0.5;
+}
+
+#btn_voice.on {
+    opacity: 1;
+    filter: drop-shadow(0 0 3px #3f3);
+}
