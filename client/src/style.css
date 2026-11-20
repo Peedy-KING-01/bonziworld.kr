@@ -2330,3 +2330,8 @@ body.no_bubble_fade .bubble {
 #page_login.login_fadeout {
     opacity: 0;
 }
+
+#voicechat_button.on .start_menu_item_name::after {
+    content: " (connected)";
+    color: #2a2;
+}
