@@ -5203,6 +5203,49 @@ settings_button.onclick = () => {
     openSettings();
 };
 
+const GAMES = [
+    { name: "Google Snakes", url: "https://googlesnakemods.com/v/current/" },
+];
+
+function openGame(game) {
+    let dialog = new Dialog({
+        title: game.name,
+        class: "game_window",
+        x: 120,
+        y: 40,
+        width: 640,
+        height: 520,
+        minWidth: 320,
+        minHeight: 240,
+        html: `<iframe class="game_frame" allow="fullscreen; autoplay; gamepad" referrerpolicy="no-referrer"></iframe>`,
+    });
+    dialog.bodyElement.querySelector(".game_frame").src = game.url;
+    // Drop the iframe on close so the game stops running and its sound ends.
+    dialog.onclose = () => { dialog.bodyElement.innerHTML = ""; };
+    return dialog;
+}
+
+gmes_button.onclick = () => {
+    start_menu.hidden = true;
+    let dialog = new Dialog({
+        title: "Games",
+        class: "games_window",
+        x: 150,
+        y: 100,
+        width: 300,
+        height: 200,
+        html: `<div class="games_list"></div>`,
+    });
+    let list = dialog.bodyElement.querySelector(".games_list");
+    for (let game of GAMES) {
+        let button = document.createElement("button");
+        button.className = "xp-button game_button";
+        button.textContent = game.name;
+        button.onclick = () => openGame(game);
+        list.appendChild(button);
+    }
+};
+
 function pollCreatorPopup() {
     let dialog = new Dialog({
         title: "Poll Creator",
