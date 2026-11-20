@@ -334,7 +334,7 @@ let rules = {
     "!t!": "gay-tiny",
     "?o?": "gay-blur",
     "||": "gay-spoiler",
-    //"%%": "marquee", 
+    "%%": "marquee",
 }
 
 function hash(text) {
