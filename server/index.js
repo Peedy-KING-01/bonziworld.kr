@@ -11,13 +11,13 @@ import { beat } from "./server.js";
 import "./discordbot.js"; // Discord bot (beta) — self-starts if DISCORD_BOT_TOKEN is set
 import { app, io, server } from "./app.js";
 import settings from "./settings.json" with { type: "json" };
-import { isCloudflare, isLocal } from "./iputil.js";
+import { isCloudflare, isLocal, isRailwayProxy } from "./iputil.js";
 
 export { app, io };
 
 // Only trust forwarding headers from Cloudflare / a local reverse proxy, so a
 // direct client cannot spoof X-Forwarded-For to forge req.ip.
-app.set("trust proxy", (addr) => isCloudflare(addr) || isLocal(addr));
+app.set("trust proxy", (addr) => isCloudflare(addr) || isLocal(addr) || isRailwayProxy(addr));
 
 app.use(cookieParser);
 

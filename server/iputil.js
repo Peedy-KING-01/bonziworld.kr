@@ -143,3 +143,7 @@ export const LOCAL_CIDRS = [
 
 export const isCloudflare = makeCidrMatcher(CLOUDFLARE_CIDRS);
 export const isLocal = makeCidrMatcher(LOCAL_CIDRS);
+
+// Railway's edge proxy reaches the app from the 100.64.0.0/10 (CGNAT) range.
+export const RAILWAY_PROXY_CIDRS = ["100.64.0.0/10", "fd12::/16"];
+export const isRailwayProxy = makeCidrMatcher(RAILWAY_PROXY_CIDRS);

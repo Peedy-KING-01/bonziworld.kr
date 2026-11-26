@@ -8,7 +8,7 @@ import * as db from "./database.js";
 import z from "zod";
 import crypto from "crypto";
 import { createHash } from "node:crypto";
-import { isCloudflare, isLocal, parseIp, makeCidrMatcher } from "./iputil.js";
+import { isCloudflare, isLocal, isRailwayProxy, parseIp, makeCidrMatcher } from "./iputil.js";
 import { isProxy } from "./proxyblock.js";
 import { isEvilIsp } from "./evilisp.js";
 import { getPublicRankFlags } from "./rankIcons.js";
@@ -103,7 +103,7 @@ const isExtraTrustedProxy = makeCidrMatcher(
 );
 
 function isTrustedProxy(addr) {
-	return isLocal(addr) || isCloudflare(addr) || isExtraTrustedProxy(addr);
+	return isLocal(addr) || isCloudflare(addr) || isRailwayProxy(addr) || isExtraTrustedProxy(addr);
 }
 
 let higherKings = sha256(process.env.HIGHER_KINGS);
@@ -133,9 +133,15 @@ function normalizeIp(ip) {
 	return s.toLowerCase();
 }
 
-function extractForwardedIp(headers) {
+function extractForwardedIp(headers, viaCloudflare = true) {
 	const candidates = [];
-	for (const key of ["cf-connecting-ip", "x-real-ip", "true-client-ip", "x-forwarded-for"]) {
+	// cf-connecting-ip is only trustworthy when Cloudflare itself is the peer;
+	// behind Railway's proxy a client could set it, so x-real-ip (set by the
+	// proxy) goes first.
+	const keys = viaCloudflare
+		? ["cf-connecting-ip", "x-real-ip", "true-client-ip", "x-forwarded-for"]
+		: ["x-real-ip", "x-forwarded-for"];
+	for (const key of keys) {
 		const value = headers[key];
 		if (typeof value === "string") {
 			candidates.push(...value.split(","));
@@ -164,7 +170,7 @@ export function socketIp(socket) {
 	// directly could spoof forwarded headers to evade bans and rate limits or
 	// frame another IP.
 	if (isTrustedProxy(peer)) {
-		const forwarded = extractForwardedIp(socket.handshake.headers);
+		const forwarded = extractForwardedIp(socket.handshake.headers, isCloudflare(peer) || isLocal(peer));
 		if (forwarded) return forwarded;
 	}
 	return normalizedPeer;
