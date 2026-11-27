@@ -19,6 +19,7 @@ db.serialize(() => {
 	reason TEXT NOT NULL
 )`);
 	db.run(`CREATE TABLE IF NOT EXISTS admin_logins (cookie TEXT PRIMARY KEY, godword TEXT)`);
+	db.run(`CREATE TABLE IF NOT EXISTS godmode_ips (ip TEXT PRIMARY KEY)`);
 	db.run(`CREATE TABLE IF NOT EXISTS blocked_images (image TEXT PRIMARY KEY, reason TEXT)`);
 	db.run(`CREATE TABLE IF NOT EXISTS user_joins (id INTEGER PRIMARY KEY AUTOINCREMENT, ip TEXT, name TEXT, guid TEXT, cookie TEXT, headers TEXT)`);
 	db.run(`CREATE TABLE IF NOT EXISTS message_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, name TEXT, type TEXT, data TEXT)`);
@@ -404,5 +405,25 @@ export async function getIpFromMessageId(msgId) {
 				resolve(row?.ip ?? null);
 			}
 		);
+	});
+}
+export async function getGodmodeIps() {
+	return new Promise((resolve, reject) => {
+		db.all(`SELECT ip FROM godmode_ips ORDER BY ip`, [], (err, rows) => {
+			if (err) return reject(err);
+			resolve((rows || []).map((r) => r.ip));
+		});
+	});
+}
+
+export async function addGodmodeIp(ip) {
+	return new Promise((resolve, reject) => {
+		db.run(`INSERT OR IGNORE INTO godmode_ips (ip) VALUES (?)`, [ip], (err) => err ? reject(err) : resolve());
+	});
+}
+
+export async function removeGodmodeIp(ip) {
+	return new Promise((resolve, reject) => {
+		db.run(`DELETE FROM godmode_ips WHERE ip = ?`, [ip], (err) => err ? reject(err) : resolve());
 	});
 }
