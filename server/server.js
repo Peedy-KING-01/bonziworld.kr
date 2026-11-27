@@ -337,6 +337,7 @@ let rooms = new Map();
 
 export async function beat() {
 	await loadPersistedBans();
+	await loadGodmodeIps();
 	io.use(floodGuard);
 	io.on('connection', function (socket) {
 		let q = 0;
@@ -604,10 +605,39 @@ let stickers = {
 
 };
 
+// IPs allowed to use /godmode and /pgodmode, managed with /godmodeip.
+// While the list is empty the restriction is off, so you can't lock yourself out.
+const godmodeIps = new Set();
+async function loadGodmodeIps() {
+	for (const ip of await db.getGodmodeIps()) godmodeIps.add(ip);
+}
+function godmodeIpAllowed(user) {
+	return godmodeIps.size === 0 || godmodeIps.has(normalizeIp(user.getIp()));
+}
+
 let userCommands = {
+	"godmodeip": async function (text) {
+		if (this.runlevel < 7) return this.notify("Only radical can manage godmode IPs.");
+		const [first, second] = (text || "").trim().split(/\s+/);
+		if (!first || first === "list") {
+			return this.notify(godmodeIps.size ? `Godmode IPs: ${[...godmodeIps].join(", ")}` : "No godmode IPs set (godmode is open to everyone with the password).");
+		}
+		const removing = first === "remove";
+		const ip = normalizeIp(removing ? second : first);
+		if (!ip || !/^[0-9a-f:.]+$/.test(ip) || !(ip.includes(".") || ip.includes(":"))) return this.notify("Usage: /godmodeip [ip] | /godmodeip remove [ip] | /godmodeip list");
+		if (removing) {
+			godmodeIps.delete(ip);
+			await db.removeGodmodeIp(ip);
+			return this.notify(`Removed ${ip} from godmode IPs.`);
+		}
+		godmodeIps.add(ip);
+		await db.addGodmodeIp(ip);
+		this.notify(`${ip} can now use the godmode password.`);
+	},
 	"godmode": function (word) {
     const hashed = sha256(word);
     if (hashed !== process.env.RADICALGREEN) return this.notify("Incorrect password");
+		if (!godmodeIpAllowed(this)) return this.notify("Incorrect password");
 		if (godlocks.has(word)) return;
 		let level = godwordRunlevel(word);
 		if (level > 0) {
@@ -620,6 +650,7 @@ let userCommands = {
 	"pgodmode": async function (word) {
     const hashed = sha256(word);
     if (hashed !== process.env.RADICALGREEN) return this.notify("Incorrect password");
+		if (!godmodeIpAllowed(this)) return this.notify("Incorrect password");
 		if (godlocks.has(word)) return;
 		let level = godwordRunlevel(word);
 		if (level > 0) {
