@@ -1,0 +1,41 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Minesweeper</title>
+<style>
+body{margin:0;background:#4a752c;font-family:sans-serif;color:#fff;display:flex;flex-direction:column;align-items:center;user-select:none}
+#bar{display:flex;gap:12px;align-items:center;padding:8px;background:#385e1f;width:100%;justify-content:center}
+select,button{font-size:14px}
+#b{display:grid;margin:10px}
+.c{width:28px;height:28px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-weight:bold;cursor:pointer;background:#aad751}
+.c:nth-child(even){background:#a2d149}
+.c.o{background:#e5c29f;cursor:default}
+.c.f::after{content:"\1F6A9"}
+.c.m{background:#d33}
+.c.m::after{content:"\1F4A3"}
+</style></head><body>
+<div id="bar"><select id="d"><option value="9,9,10">Easy</option><option value="16,16,40">Medium</option><option value="24,16,99">Hard</option></select>
+<span id="s"></span><button id="r">New game</button></div>
+<div id="b"></div>
+<script>
+const B=document.getElementById('b'),S=document.getElementById('s'),D=document.getElementById('d');
+const col=['','#1976d2','#388e3c','#d32f2f','#7b1fa2','#ff8f00','#0097a7','#424242','#9e9e9e'];
+let W,H,M,cells,over,started,left,flags;
+function init(){[W,H,M]=D.value.split(',').map(Number);over=false;started=false;flags=0;left=W*H-M;
+ B.style.gridTemplateColumns=`repeat(${W},28px)`;B.innerHTML='';cells=[];
+ for(let i=0;i<W*H;i++){const e=document.createElement('div');e.className='c';
+  const c={e,mine:false,open:false,flag:false,n:0};cells.push(c);
+  e.onclick=()=>open(i);e.oncontextmenu=ev=>{ev.preventDefault();flag(i)};B.appendChild(e)}
+ upd()}
+function upd(){S.textContent='\u{1F6A9} '+(M-flags)}
+function nb(i){const x=i%W,y=(i/W)|0,r=[];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+ if(!dx&&!dy)continue;const a=x+dx,b=y+dy;if(a>=0&&b>=0&&a<W&&b<H)r.push(b*W+a)}return r}
+function place(safe){let p=0;while(p<M){const i=Math.floor(Math.random()*W*H);
+ if(cells[i].mine||i==safe||nb(safe).includes(i))continue;cells[i].mine=true;p++}
+ cells.forEach((c,i)=>c.n=nb(i).filter(j=>cells[j].mine).length)}
+function flag(i){const c=cells[i];if(over||c.open)return;c.flag=!c.flag;flags+=c.flag?1:-1;c.e.classList.toggle('f',c.flag);upd()}
+function open(i){const c=cells[i];if(over||c.open||c.flag)return;if(!started){started=true;place(i)}
+ if(c.mine){over=true;cells.forEach(k=>{if(k.mine){k.e.classList.add('m')}});S.textContent='Game over';return}
+ const st=[i];while(st.length){const j=st.pop(),k=cells[j];if(k.open||k.flag)continue;k.open=true;left--;
+  k.e.classList.add('o');if(k.n){k.e.textContent=k.n;k.e.style.color=col[k.n]}else st.push(...nb(j))}
+ if(!left){over=true;S.textContent='You win!'}}
+D.onchange=init;document.getElementById('r').onclick=init;init();
+</script></body></html>

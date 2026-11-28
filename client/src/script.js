@@ -5298,6 +5298,21 @@ function snakePopup() {
         height: 560,
     });
 }
+function minesweeperPopup() {
+    return new Dialog({
+        title: "Minesweeper",
+        class: "flex_window",
+        html: `
+            <div class="blessed_body">
+                <iframe src="./minesweeper.html" width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+        `,
+        x: Math.max(0, (window.innerWidth - 420) / 2),
+        y: Math.max(0, (window.innerHeight - 520) / 2),
+        width: 420,
+        height: 520,
+    });
+}
 function gamesPopup() {
     const d = new Dialog({
         title: "Games",
@@ -5306,8 +5321,7 @@ function gamesPopup() {
             <div class="blessed_body">
                 <h2>Games</h2>
                 <button class="games_snake">Google Snake</button>
-                <button class="games_minesweeper">Google Minesweeper</button>
-                <p><small>Minesweeper opens in a new tab (Google doesn't allow embedding it).</small></p>
+                <button class="games_minesweeper">Minesweeper</button>
             </div>
         `,
         x: Math.max(0, (window.innerWidth - 360) / 2),
@@ -5317,8 +5331,7 @@ function gamesPopup() {
     });
     const el = d.element;
     el.querySelector(".games_snake").onclick = () => snakePopup();
-    el.querySelector(".games_minesweeper").onclick = () =>
-        window.open("https://www.google.com/fbx?fbx=minesweeper", "_blank", "noopener");
+    el.querySelector(".games_minesweeper").onclick = () => minesweeperPopup();
     return d;
 }
 gmes_button.onclick = () => {
