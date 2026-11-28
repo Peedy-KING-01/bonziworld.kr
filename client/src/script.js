@@ -5283,6 +5283,49 @@ function pollCreatorPopup() {
 
 
 
+function snakePopup() {
+    return new Dialog({
+        title: "Google Snake",
+        class: "flex_window",
+        html: `
+            <div class="blessed_body">
+                <iframe src="https://googlesnakemods.com/v/current/" width="100%" height="100%" frameborder="0" allow="fullscreen; autoplay"></iframe>
+            </div>
+        `,
+        x: Math.max(0, (window.innerWidth - 700) / 2),
+        y: Math.max(0, (window.innerHeight - 560) / 2),
+        width: 700,
+        height: 560,
+    });
+}
+function gamesPopup() {
+    const d = new Dialog({
+        title: "Games",
+        class: "flex_window",
+        html: `
+            <div class="blessed_body">
+                <h2>Games</h2>
+                <button class="games_snake">Google Snake</button>
+                <button class="games_minesweeper">Google Minesweeper</button>
+                <p><small>Minesweeper opens in a new tab (Google doesn't allow embedding it).</small></p>
+            </div>
+        `,
+        x: Math.max(0, (window.innerWidth - 360) / 2),
+        y: Math.max(0, (window.innerHeight - 240) / 2),
+        width: 360,
+        height: 240,
+    });
+    const el = d.element;
+    el.querySelector(".games_snake").onclick = () => snakePopup();
+    el.querySelector(".games_minesweeper").onclick = () =>
+        window.open("https://www.google.com/fbx?fbx=minesweeper", "_blank", "noopener");
+    return d;
+}
+gmes_button.onclick = () => {
+    start_menu.hidden = true;
+    gamesPopup();
+};
+
 poll_button.onclick = () => {
     start_menu.hidden = true;
     pollCreatorPopup();
